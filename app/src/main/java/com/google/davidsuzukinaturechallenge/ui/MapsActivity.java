@@ -173,7 +173,7 @@ public class MapsActivity extends FragmentActivity implements
 
     private void addMapMarkers() {
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCurrentLatLng, 13));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCurrentLatLng, 15));
         mMap.addMarker(new MarkerOptions()
                 .position(mCurrentLatLng)
                 .title("Current Location")
