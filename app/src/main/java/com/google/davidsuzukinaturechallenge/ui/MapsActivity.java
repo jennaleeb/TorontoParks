@@ -7,6 +7,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -22,6 +24,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.davidsuzukinaturechallenge.R;
+import com.google.davidsuzukinaturechallenge.adapters.ParkAdapter;
 import com.google.davidsuzukinaturechallenge.models.Park;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
@@ -47,6 +50,10 @@ public class MapsActivity extends FragmentActivity implements
     private LocationRequest mLocationRequest;
     private Park[] mParkList;
     private LatLng mCurrentLatLng;
+
+    RecyclerView mRecyclerView;
+    RecyclerView.LayoutManager mLayoutManager;
+    RecyclerView.Adapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,7 +168,6 @@ public class MapsActivity extends FragmentActivity implements
         mCurrentLatLng = new LatLng(currentLatitude, currentLongitude);
 
         // Fetch Parks data from API
-        //String parksUrl = "https://api.namara.io/v0/data_sets/735b7e24-0fdb-4918-b112-5958725410a7/data/en-2/?api_key=896cf0acbd9737caa5546d04a0017d7c7d5ce30a58d78ec302dd42daadc42e59";
         String parksUrl = "https://api.namara.io/v0/data_sets/735b7e24-0fdb-4918-b112-5958725410a7/data/en-2?where=nearby(geometry," + currentLatitude + "," + currentLongitude + ",0.5km)&select=name,geometry&api_key=84f746dc871c40817621ec389dd49982fb3df4510451491a36cbad3c6ca4eab0";
 
         callParksNetwork(parksUrl);
@@ -184,6 +190,17 @@ public class MapsActivity extends FragmentActivity implements
             mMap.addMarker(new MarkerOptions().position(new LatLng(park.getLng(), park.getLat())).title(park.getName()));
         }
 
+    }
+
+    private void addParkListCards(){
+        mRecyclerView = (RecyclerView)findViewById(R.id.map_list_recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+
+        mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mAdapter = new ParkAdapter(mParkList);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
 
@@ -224,6 +241,7 @@ public class MapsActivity extends FragmentActivity implements
                                 @Override
                                 public void run() {
                                     addMapMarkers();
+                                    addParkListCards();
                                 }
                             });
 
@@ -263,12 +281,24 @@ public class MapsActivity extends FragmentActivity implements
             JSONArray jsonCoordinates = jsonGeometry.getJSONArray("coordinates");
             JSONArray coordinates = jsonCoordinates.getJSONArray(0);
 
-            JSONArray first_coordinate = coordinates.getJSONArray(0);
+            double latSum = 0;
+            double lngSum = 0;
+            int coordCount = 0;
+
+            // get center of park from avg coordinates
+            for (int j = 0; j < coordinates.length(); j++) {
+                latSum += coordinates.getJSONArray(j).getDouble(0);
+                lngSum += coordinates.getJSONArray(j).getDouble(1);
+                coordCount += 1;
+            }
+
+            double latAvg = latSum/coordCount;
+            double lngAvg = lngSum/coordCount;
 
             Park park = new Park();
             park.setName(jsonPark.getString("name"));
-            park.setLat(first_coordinate.getDouble(0));
-            park.setLng(first_coordinate.getDouble(1));
+            park.setLat(latAvg);
+            park.setLng(lngAvg);
             parkList[i] = park;
         }
         return parkList;
@@ -286,8 +316,4 @@ public class MapsActivity extends FragmentActivity implements
         return isAvailable;
     }
 
-    /*private void alertUserAboutError() {
-        AlertDialogFragment dialog = new AlertDialogFragment();
-        dialog.show(getFragmentManager(), "error_dialog");
-    }*/
 }

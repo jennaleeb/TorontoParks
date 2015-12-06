@@ -1,7 +1,32 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:id="@+id/map"
-          tools:context="com.google.davidsuzukinaturechallenge.ui.MapsActivity"
-          android:name="com.google.android.gms.maps.SupportMapFragment"/>
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sliding_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    sothree:umanoPanelHeight="180dp"
+    sothree:umanoShadowHeight="4dp"
+    sothree:umanoDragView="@+id/park_title_bar"
+    sothree:umanoScrollableView="@+id/map_list_recycler_view">
+
+    <FrameLayout
+        android:id="@+id/activity_single_fragment_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:tools="http://schemas.android.com/tools"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:id="@+id/map"
+                  tools:context="com.google.davidsuzukinaturechallenge.ui.MapsActivity"
+                  android:name="com.google.android.gms.maps.SupportMapFragment"/>
+    </FrameLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/map_list_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

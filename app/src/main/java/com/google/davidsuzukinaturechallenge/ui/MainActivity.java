@@ -39,21 +39,21 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        // TODO: check if location services are on
+
         mGetMapButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
-                if ( checkGPS() == true ) {
+                if (checkGPS() == true) {
                     Intent intent = new Intent(MainActivity.this, com.google.davidsuzukinaturechallenge.ui.MapsActivity.class);
                     startActivity(intent);
                 }
 
 
-
             }
         });
+
     }
 
     public boolean checkGPS() {
