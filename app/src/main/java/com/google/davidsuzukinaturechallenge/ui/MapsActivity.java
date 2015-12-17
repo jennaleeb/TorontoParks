@@ -1,16 +1,20 @@
 package com.google.davidsuzukinaturechallenge.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -38,7 +42,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class MapsActivity extends FragmentActivity implements
+public class MapsActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
@@ -55,10 +59,17 @@ public class MapsActivity extends FragmentActivity implements
     RecyclerView.LayoutManager mLayoutManager;
     RecyclerView.Adapter mAdapter;
 
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(""); // Take away label
+
         setUpMapIfNeeded();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -72,6 +83,37 @@ public class MapsActivity extends FragmentActivity implements
                 .setInterval(10 * 1000)        // 10 seconds, in milliseconds
                 .setFastestInterval(1 * 1000); // 1 second, in milliseconds
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_profile:
+                Intent intent = new Intent(MapsActivity.this, com.google.davidsuzukinaturechallenge.ui.ProfileActivity.class);
+                startActivity(intent);
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -134,6 +176,8 @@ public class MapsActivity extends FragmentActivity implements
 
         if (location == null) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
+            Log.i(TAG, "Location services null.");
         }
         else {
             handleNewLocation(location);
@@ -168,7 +212,9 @@ public class MapsActivity extends FragmentActivity implements
         mCurrentLatLng = new LatLng(currentLatitude, currentLongitude);
 
         // Fetch Parks data from API
-        String parksUrl = "https://api.namara.io/v0/data_sets/735b7e24-0fdb-4918-b112-5958725410a7/data/en-2?where=nearby(geometry," + currentLatitude + "," + currentLongitude + ",0.5km)&select=name,geometry&api_key=84f746dc871c40817621ec389dd49982fb3df4510451491a36cbad3c6ca4eab0";
+
+        //String parksUrl = "https://api.namara.io/v0/data_sets/735b7e24-0fdb-4918-b112-5958725410a7/data/en-2?where=nearby(geometry," + currentLatitude + "," + currentLongitude + ",0.5km)&select=name,geometry&api_key=84f746dc871c40817621ec389dd49982fb3df4510451491a36cbad3c6ca4eab0";
+        String parksUrl ="https://api.namara.io/v0/data_sets/735b7e24-0fdb-4918-b112-5958725410a7/data/en-2?api_key=896cf0acbd9737caa5546d04a0017d7c7d5ce30a58d78ec302dd42daadc42e59&nearby(geometry,43.653226,-79.3831843,0.5km)&select=name,geometry";
 
         callParksNetwork(parksUrl);
 
@@ -212,6 +258,8 @@ public class MapsActivity extends FragmentActivity implements
 
     private void callParksNetwork(String parksUrl) {
 
+        //TODO: Getting an SSL handshake error
+
         if (isNetworkAvailable()) {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
@@ -223,14 +271,14 @@ public class MapsActivity extends FragmentActivity implements
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
-
+                    Log.e(TAG, "Exception caught", e);
                 }
 
                 @Override
                 public void onResponse(Response response) throws IOException {
                     try {
                         String jsonData = response.body().string();
-                        Log.v(TAG, jsonData);
+                        Log.i(TAG, "Connected and responding");
                         if (response.isSuccessful()) {
 
                             // Create Park object
@@ -248,6 +296,7 @@ public class MapsActivity extends FragmentActivity implements
 
                         } else {
                             //alertUserAboutError();
+                            Log.e(TAG, "There was an error connecting");
                         }
                     }
 
@@ -314,6 +363,7 @@ public class MapsActivity extends FragmentActivity implements
         }
 
         return isAvailable;
+
     }
 
 }
