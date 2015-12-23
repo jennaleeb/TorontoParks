@@ -50,6 +50,10 @@
             android:name=".ui.ProfileActivity"
             android:label="@string/title_activity_profile" >
         </activity>
+        <activity
+            android:name=".ui.SecretGardenActivity"
+            android:label="@string/title_activity_secret_garden" >
+        </activity>
     </application>
 
 </manifest>

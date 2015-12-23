@@ -10,11 +10,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -108,8 +108,12 @@ public class MapsActivity extends AppCompatActivity implements
             case R.id.action_settings:
                 return true;
             case R.id.action_profile:
-                Intent intent = new Intent(MapsActivity.this, com.google.davidsuzukinaturechallenge.ui.ProfileActivity.class);
-                startActivity(intent);
+                Intent intent1 = new Intent(MapsActivity.this, com.google.davidsuzukinaturechallenge.ui.ProfileActivity.class);
+                startActivity(intent1);
+                return true;
+            case R.id.action_secret_garden:
+                Intent intent2 = new Intent(MapsActivity.this, com.google.davidsuzukinaturechallenge.ui.SecretGardenActivity.class);
+                startActivity(intent2);
                 return true;
         }
 
@@ -180,7 +184,9 @@ public class MapsActivity extends AppCompatActivity implements
             Log.i(TAG, "Location services null.");
         }
         else {
+
             handleNewLocation(location);
+
         }
     }
 
@@ -213,12 +219,9 @@ public class MapsActivity extends AppCompatActivity implements
 
         // Fetch Parks data from API
 
-        //String parksUrl = "https://api.namara.io/v0/data_sets/735b7e24-0fdb-4918-b112-5958725410a7/data/en-2?where=nearby(geometry," + currentLatitude + "," + currentLongitude + ",0.5km)&select=name,geometry&api_key=84f746dc871c40817621ec389dd49982fb3df4510451491a36cbad3c6ca4eab0";
-        String parksUrl ="https://api.namara.io/v0/data_sets/735b7e24-0fdb-4918-b112-5958725410a7/data/en-2?api_key=896cf0acbd9737caa5546d04a0017d7c7d5ce30a58d78ec302dd42daadc42e59&nearby(geometry,43.653226,-79.3831843,0.5km)&select=name,geometry";
+        String parksUrl = "https://api.namara.io/v0/data_sets/735b7e24-0fdb-4918-b112-5958725410a7/data/en-2?where=nearby(geometry," + currentLatitude + "," + currentLongitude + ",0.5km)&select=name,geometry&api_key=84f746dc871c40817621ec389dd49982fb3df4510451491a36cbad3c6ca4eab0";
 
         callParksNetwork(parksUrl);
-
-
 
 
     }
@@ -253,15 +256,17 @@ public class MapsActivity extends AppCompatActivity implements
 
     @Override
     public void onLocationChanged(Location location) {
+
         handleNewLocation(location);
+
     }
 
     private void callParksNetwork(String parksUrl) {
 
-        //TODO: Getting an SSL handshake error
 
         if (isNetworkAvailable()) {
             OkHttpClient client = new OkHttpClient();
+
             Request request = new Request.Builder()
                     .url(parksUrl)
                     .build();

@@ -4,10 +4,14 @@
       tools:context=".MainActivity">
     <item android:id="@+id/action_settings"
           android:title="@string/action_settings"
-          android:orderInCategory="200"
+          android:orderInCategory="300"
           app:showAsAction="never"/>
     <item android:id="@+id/action_profile"
           android:title="@string/action_profile"
           android:orderInCategory="100"
+          app:showAsAction="never"/>
+    <item android:id="@+id/action_secret_garden"
+          android:title="@string/action_secret_garden"
+          android:orderInCategory="200"
           app:showAsAction="never"/>
 </menu>
