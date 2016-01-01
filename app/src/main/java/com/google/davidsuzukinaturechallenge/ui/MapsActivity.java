@@ -68,7 +68,7 @@ public class MapsActivity extends AppCompatActivity implements
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
         setSupportActionBar(toolbar);
-        toolbar.setTitle(""); // Take away label
+        getSupportActionBar().setTitle("Nearby Parks");
 
         setUpMapIfNeeded();
 

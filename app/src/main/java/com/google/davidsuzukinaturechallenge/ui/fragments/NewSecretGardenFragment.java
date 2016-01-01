@@ -1,13 +1,13 @@
 package com.google.davidsuzukinaturechallenge.ui.fragments;
 
 import android.app.Fragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ImageButton;
 
 import com.google.davidsuzukinaturechallenge.R;
 
@@ -26,26 +26,38 @@ public class NewSecretGardenFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.new_garden_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_new_garden, container, false);
 
-        EditText parkNameEditText = (EditText)view.findViewById(R.id.edit_text_park_name);
-        EditText parkLatEditText = (EditText)view.findViewById(R.id.edit_text_park_lat);
-        EditText parkLngEditText = (EditText)view.findViewById(R.id.edit_text_park_lng);
-        Button addAnotherButton = (Button)view.findViewById(R.id.button_add_another_garden);
-        Button doneAddingButton = (Button)view.findViewById(R.id.button_done_adding_garden);
+        ImageButton addAnotherButton = (ImageButton)view.findViewById(R.id.button_add_another_garden);
+        ImageButton doneAddingButton = (ImageButton)view.findViewById(R.id.button_done_adding_garden);
+
+
+        addAnotherButton.setBackgroundResource(R.drawable.roundbutton);
+        addAnotherButton.setBackgroundColor(Color.MAGENTA); // for some reason when this is deleted the background colour goes away..?!
+
+        doneAddingButton.setBackgroundResource(R.drawable.roundbutton);
+        doneAddingButton.setBackgroundColor(Color.MAGENTA);
+
+        EditText editGardenName = (EditText) view.findViewById(R.id.edit_text_park_name);
 
         addAnotherButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NewSecretGardenFragment newSecretGardenFragment = new NewSecretGardenFragment();
-                getActivity().getFragmentManager().beginTransaction().add(android.R.id.content, newSecretGardenFragment).commit();
+
+                // first save the new park
+
+                // Then open a new fragment to enter another park
+                int fragCount = getFragmentManager().getBackStackEntryCount();
+                NewSecretGardenFieldsFragment newSecretGardenFieldsFragment = NewSecretGardenFieldsFragment.newInstance("#" + fragCount + ": Park Name");
+                getFragmentManager().beginTransaction().replace(R.id.fields_container, newSecretGardenFieldsFragment).addToBackStack(null).commit();
+
             }
         });
 
         doneAddingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Done!", Toast.LENGTH_SHORT).show();
+                // commit parks to file/database
             }
         });
 
@@ -59,6 +71,8 @@ public class NewSecretGardenFragment extends Fragment {
         // Save data here if necessary
         super.onPause();
     }
+
+
 
 
 }
